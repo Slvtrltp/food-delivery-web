@@ -9,17 +9,15 @@ export const GET = async () => {
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
 
-  // Шалгалт: Ангиллын нэр ирээгүй бол алдаа буцаана
   if (!body.categoryName) {
     return NextResponse.json(
       { error: "categoryName заавал шаардлагатай!" },
       { status: 400 },
     );
   }
-  // Шинэ ангилал үүсгэх
   const newCategory = await prisma.foodCategory.create({
     data: {
-      categoryName: body.categoryName, // Утгыг нь ингэж зааж өгнө
+      categoryName: body.categoryName,
     },
   });
 
