@@ -33,6 +33,10 @@ export default function Home({}) {
   return (
     <div className="w-full h-screen flex justify-center items-center bg-[#f4f4f4]">
       <StepForm
+        form={form}
+        setForm={setForm}
+        error={error}
+        setError={setError}
         handleNextStep={handleNextStep}
         handlePrevStep={handlePrevStep}
       />

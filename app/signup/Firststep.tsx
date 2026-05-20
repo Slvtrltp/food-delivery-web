@@ -2,17 +2,37 @@
 import React, { useState } from "react";
 import { TextField } from "../components/TextField";
 import Link from "next/link";
-interface FirstStepProps {
+
+type FormState = {
+  email: string;
+  password?: string;
+  confirmPassword?: string;
+};
+type FirstStepProps = {
   handleNextStep: () => void;
-}
-export const Firststep = ({ handleNextStep }: FirstStepProps) => {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const isEmailVallid = (email: string) => {
+  form: FormState;
+  setForm: React.Dispatch<React.SetStateAction<FormState>>;
+  setError: React.Dispatch<React.SetStateAction<FormState>>;
+  error: FormState;
+};
+export const Firststep = ({
+  handleNextStep,
+  form,
+  setForm,
+  error,
+  setError,
+}: FirstStepProps) => {
+  const isEmailValid = (email: string) => {
     if (email === "") return "И-мэйлээ оруулна уу!";
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
       return "И-мэйл буруу форматтай байна.";
     return "";
+  };
+  const errorStep = (): boolean => {
+    if (form.email === "" || isEmailValid(form.email) !== "") {
+      return true;
+    }
+    return false;
   };
   return (
     <div className=" container ">
@@ -45,19 +65,21 @@ export const Firststep = ({ handleNextStep }: FirstStepProps) => {
           </ul>
           <TextField
             id="email"
-            value={email}
+            value={form.email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setEmail(e.target.value);
-              setEmailError(isEmailVallid(e.target.value));
+              setForm({ ...form, email: e.target.value });
+              setError({ ...error, email: isEmailValid(e.target.value) });
             }}
             placeholder="Enter your email address"
             type="email"
-            error={emailError}
+            error={error.email}
+            required={true}
           />
           <button
+            disabled={errorStep()}
             onClick={handleNextStep}
             type="button"
-            className="w-full rounded-md  bg-[#50c878] h-[36px] text-white"
+            className="w-full rounded-md  bg-[#50c878] h-[36px] text-white disabled:opacity-50"
           >
             Let&apos;s Go
           </button>

@@ -3,8 +3,8 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="w-full bg-gray-100">
-      <img className="h-200 w-full" src="/img.jpg" alt="logo" />
+    <div className="w-full bg-white">
+      <img className="h-200 w-full" src="/slider1.jpg" alt="logo" />
     </div>
   );
 };

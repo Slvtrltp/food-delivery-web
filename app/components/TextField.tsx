@@ -6,6 +6,7 @@ type TextFieldProps = {
   id: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
+  required: boolean;
 };
 
 export const TextField = ({
@@ -24,6 +25,7 @@ export const TextField = ({
         id="input"
         onChange={onChange}
         value={value}
+        required={true}
       ></input>
       {error && (
         <div className="text-[#E14942] whitespace-pre-line text-[14px]">

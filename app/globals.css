@@ -28,3 +28,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+@keyframes loopScroll {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-loop-scroll {
+  display: flex;
+  flex-shrink: 0;
+
+  align-items: center;
+  justify-content: space-around;
+  animation: loopScroll 20s linear infinite;
+}

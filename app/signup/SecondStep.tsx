@@ -1,13 +1,54 @@
 import React, { useState } from "react";
 import { TextField } from "../components/TextField";
-interface FirstStepProps {
+
+type FormState = {
+  email?: string;
+  password: string;
+  confirmPassword: string;
+};
+
+type SecondStepProps = {
   handleNextStep: () => void;
   handlePrevStep: () => void;
-}
+  form: FormState;
+  error: FormState;
+  setForm: React.Dispatch<React.SetStateAction<FormState>>;
+  setError: React.Dispatch<React.SetStateAction<FormState>>;
+};
 export const SecondStep = ({
-  handleNextStep,
   handlePrevStep,
-}: FirstStepProps) => {
+  form,
+  error,
+  setForm,
+  setError,
+}: SecondStepProps) => {
+  const isPasswordValid = (password: string) => {
+    if (password === "") return "Нууц үгээ оруулна уу!";
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(password)
+    ) {
+      const errors = [];
+      if (password.length < 8) errors.push("•8 тэмдэгт байх ёстой.");
+      if (!/[A-Z]/.test(password)) errors.push("•1 том үсэг агуулах ёстой.");
+      if (!/[a-z]/.test(password))
+        errors.push("•1 жижиг үсэн агуулагдах ёстой.");
+      if (!/[0-9]/.test(password)) errors.push("•1 тоо агуулах ёстой.");
+      if (!/[!@#$%^&*]/.test(password))
+        errors.push("•1 тусгай тэмдэгт агуулах ёстой.");
+      const PassErr =
+        "Нууц үг нь дараах шаардлагуудыг хангасан байх ёстой. \n " +
+        errors.join("\n");
+      return PassErr;
+    }
+  };
+  const isConfirmPasswordValid = (confirmPassword: string) => {
+    if (confirmPassword !== form.password) return "Нууц үг таарахгүй байна.";
+    if (confirmPassword === "") return "Нууц үгээ оруулна уу!";
+  };
+  const errorStep = (): boolean => {
+    isPasswordValid(form.password) ||
+      isConfirmPasswordValid(form.confirmPassword);
+  };
   return (
     <div className=" container ">
       <div className=" flex items-center mt-20 gap-10">
