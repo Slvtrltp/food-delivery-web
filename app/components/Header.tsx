@@ -1,24 +1,8 @@
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 
-type NavbarProps = {
-  user: boolean;
-  onLogout: () => void;
-};
-const Header = () => {
-  const {user,setUser}=useContext(UserContext)
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUser(true);
-    }
-  }, []);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(false);
-  };
+export const Header = () => {
+  const { user, setUser } = useContext(UserContext);
   return (
     <div className="bg-white w-full flex justify-center items-center">
       <div className=" w-full h-17 flex justify-center items-center container">
@@ -77,7 +61,7 @@ const Header = () => {
                   <p className="text-[12px] text-[#448A5B]">
                     Delivery address:{" "}
                     <span className="text-[12px] text-[#71717A]">
-                      Add location
+                      {user.address ? user.address : "Add location"}
                     </span>
                   </p>
                   <svg
@@ -152,5 +136,3 @@ const Header = () => {
     </div>
   );
 };
-
-export default Header;

@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect, useState } from "react";
 import { TextField } from "../components/TextField";
 import { StepProps } from "./page";
@@ -12,31 +13,6 @@ export const SecondStep = ({
   setError,
 }: StepProps) => {
   const [showPassword, setShowPassword] = useState(false);
-
-  const router = useRouter();
-  useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user]);
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    fetch("https://dummyjson.com/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-      headers: {
-        "Content-Type": "application/json",
-        Accepts: "application/json",
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setUser(data);
-      });
-  };
   const isPasswordValid = (password: string) => {
     if (password === "") return "Нууц үгээ оруулна уу!";
     if (
@@ -69,12 +45,13 @@ export const SecondStep = ({
 
     return hasPasswordError || hasConfirmError;
   };
+
   return (
     <div className=" container ">
-      <div className=" flex items-center mt-20 gap-10">
+      <form className=" flex items-center mt-20 gap-10">
         <div className="w-104 space-y-6">
           <button
-            type="button"
+            type="submit"
             onClick={handlePrevStep}
             className="w-9 h-9 border border-[#E4E4E7] rounded-md flex justify-center items-center"
           >
@@ -162,7 +139,7 @@ export const SecondStep = ({
         <div className="">
           <img src="/image.png" alt="poster" className="rounded-lg" />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

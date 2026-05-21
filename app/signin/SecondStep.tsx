@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TextField } from "../components/TextField";
 import { StepProps } from "./page";
 import Link from "next/link";
+import { UserContext } from "../context/UserContext";
+import { useRouter } from "next/router";
 
 export const SecondStep = ({
   handlePrevStep,
@@ -11,6 +13,8 @@ export const SecondStep = ({
   setError,
 }: StepProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { user, setUser } = useContext(UserContext); // 👈 Context дуудах
+  const router = useRouter();
   const isPasswordValid = (password: string) => {
     if (password === "") return "Нууц үгээ оруулна уу!";
     if (
@@ -43,12 +47,45 @@ export const SecondStep = ({
 
     return hasPasswordError || hasConfirmError;
   };
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // 1. Хөтөч дээр токеныг хадгалах
+        localStorage.setItem("token", data.token);
+        // 2. Төв агуулах буюу Context-ийг шинэчлэх (Ингэснээр Header шууд өөрчлөгдөнө)
+        setUser(data.user);
+        // 3. Homepage рүү үсрэх
+        router.push("/");
+      } else {
+        alert(data.error || "Бүртгэхэд алдаа гарлаа");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Сүлжээний алдаа гарлаа");
+    }
+  };
   return (
     <div className=" container ">
-      <div className=" flex items-center mt-20 gap-10">
+      <form onSubmit={handleSubmit} className=" flex items-center mt-20 gap-10">
         <div className="w-104 space-y-6">
           <button
-            type="button"
+            type="submit"
             onClick={handlePrevStep}
             className="w-9 h-9 border border-[#E4E4E7] rounded-md flex justify-center items-center"
           >
@@ -136,7 +173,7 @@ export const SecondStep = ({
         <div className="">
           <img src="/image.png" alt="poster" className="rounded-lg" />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

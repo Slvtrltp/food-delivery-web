@@ -2,7 +2,6 @@
 import { useState } from "react";
 
 import { Firststep } from "./Firststep";
-import { SecondStep } from "./SecondStep";
 
 export type FormState = {
   email: string;
@@ -31,7 +30,7 @@ export default function Home({}) {
     confirmPassword: "",
   });
 
-  const steps = [Firststep, SecondStep];
+  const steps = [Firststep];
   const StepForm = steps[step];
 
   const handleNextStep = () => {
