@@ -45,3 +45,25 @@ body {
   justify-content: space-around;
   animation: loopScroll 20s linear infinite;
 }
+.faded-image-mask {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}

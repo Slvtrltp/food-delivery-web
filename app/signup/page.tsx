@@ -4,6 +4,20 @@ import { useState } from "react";
 import { Firststep } from "./Firststep";
 import { SecondStep } from "./SecondStep";
 
+export type FormState = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+export type StepProps = {
+  handlePrevStep?: () => void;
+  handleNextStep?: () => void;
+  form: FormState;
+  setForm: React.Dispatch<React.SetStateAction<FormState>>;
+  setError: React.Dispatch<React.SetStateAction<FormState>>;
+  error: FormState;
+};
+
 export default function Home({}) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({

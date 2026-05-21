@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TextField } from "../components/TextField";
 import { StepProps } from "./page";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 export const SecondStep = ({
   handlePrevStep,
@@ -12,31 +11,6 @@ export const SecondStep = ({
   setError,
 }: StepProps) => {
   const [showPassword, setShowPassword] = useState(false);
-
-  const router = useRouter();
-  useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user]);
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    fetch("https://dummyjson.com/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-      headers: {
-        "Content-Type": "application/json",
-        Accepts: "application/json",
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setUser(data);
-      });
-  };
   const isPasswordValid = (password: string) => {
     if (password === "") return "Нууц үгээ оруулна уу!";
     if (
