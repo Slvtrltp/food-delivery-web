@@ -11,17 +11,38 @@ export const Firststep = ({
   error,
   setError,
 }: StepProps) => {
+  const [showPassword, setShowPassword] = useState(false);
   const isEmailValid = (email: string) => {
     if (email === "") return "И-мэйлээ оруулна уу!";
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
       return "И-мэйл буруу форматтай байна.";
     return "";
   };
-  const errorStep = (): boolean => {
-    if (form.email === "" || isEmailValid(form.email) !== "") {
-      return true;
+  const isPasswordValid = (password: string) => {
+    if (password === "") return "Нууц үгээ оруулна уу!";
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(password)
+    ) {
+      const errors = [];
+      if (password.length < 8) errors.push("•8 тэмдэгт байх ёстой.");
+      if (!/[A-Z]/.test(password)) errors.push("•1 том үсэг агуулах ёстой.");
+      if (!/[a-z]/.test(password))
+        errors.push("•1 жижиг үсэн агуулагдах ёстой.");
+      if (!/[0-9]/.test(password)) errors.push("•1 тоо агуулах ёстой.");
+      if (!/[!@#$%^&*]/.test(password))
+        errors.push("•1 тусгай тэмдэгт агуулах ёстой.");
+      const PassErr =
+        "Нууц үг нь дараах шаардлагуудыг хангасан байх ёстой. \n " +
+        errors.join("\n");
+      return PassErr;
     }
-    return false;
+    return "";
+  };
+  const errorStep = () => {
+    const hasPasswordError = isPasswordValid(form.password) !== "";
+    const hasEmailError = isEmailValid(form.email) !== "";
+
+    return hasPasswordError || hasEmailError;
   };
   return (
     <div className=" container ">
@@ -47,9 +68,9 @@ export const Firststep = ({
             </svg>
           </Link>
           <ul>
-            <h1 className="text-[26px] font-semibold">Create your account</h1>
+            <h1 className="text-[26px] font-semibold">Log in </h1>
             <p className="text-[18px] text-[#71717A] font">
-              Sign up to explore your favorite dishes.
+              Log in to enjoy your favorite dishes.
             </p>
           </ul>
           <TextField
@@ -64,6 +85,22 @@ export const Firststep = ({
             error={error.email}
             required={true}
           />
+          <TextField
+            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            id="password"
+            value={form.password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setForm({ ...form, password: e.target.value });
+              setError({
+                ...error,
+                password: isPasswordValid(e.target.value),
+              });
+            }}
+            error={error.password}
+            required={true}
+          />
+          <li className="">Forgot password</li>
           <button
             disabled={errorStep()}
             onClick={handleNextStep}

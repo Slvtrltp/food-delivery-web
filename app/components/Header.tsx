@@ -1,8 +1,7 @@
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 
-export const Header = () => {
-  const { user, setUser } = useContext(UserContext);
+export const Header = (user: string) => {
   return (
     <div className="bg-white w-full flex justify-center items-center">
       <div className=" w-full h-17 flex justify-center items-center container">
@@ -35,7 +34,7 @@ export const Header = () => {
           <div>
             {user ? (
               <div className="flex gap-3.25">
-                <div className="px-3 py-2 flex gap-1 justify-center items-center bg-white rounded-3xl">
+                <div className="px-3 py-2 flex gap-1 justify-center items-center bg-white rounded-3xl cursor pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="15"
@@ -60,7 +59,7 @@ export const Header = () => {
                   </svg>
                   <p className="text-[12px] text-[#448A5B]">
                     Delivery address:{" "}
-                    <span className="text-[12px] text-[#71717A]">
+                    <span className="text-[12px] text-[#71717A] cursor pointer">
                       {user.address ? user.address : "Add location"}
                     </span>
                   </p>
