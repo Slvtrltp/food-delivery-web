@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { Prisma } from "@/app/generated/prisma/client";
+import axios from "axios";
+import { useEffect, useState } from "react";
 export type FoodCategoryWithFoods = Prisma.FoodCategoryGetPayload<{
   include: { foods: true };
 }>;
