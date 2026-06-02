@@ -18,16 +18,11 @@ export default function AdminLayout({
     );
   }
 
-  if (!loading && !user) {
-    return redirect("/login");
+  if (!user && !loading) {
+    redirect("/login");
   }
-
   if (user?.role !== "ADMIN") {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        You are not admin
-      </div>
-    );
+    return "You are not admin";
   }
 
   return (

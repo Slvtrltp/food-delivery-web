@@ -6,7 +6,7 @@ import { Logo } from "./auth-form";
 import { useRouter } from "next/navigation";
 
 export const Header = () => {
-  const { user, logout } = useUser();
+  const { user, logout, loading } = useUser();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -14,12 +14,16 @@ export const Header = () => {
     logout();
     router.push("/");
   };
+
   return (
     <div className="bg-white w-full flex justify-center items-center">
       <div className=" w-full h-17 flex justify-center items-center container">
         <div className="w-full flex justify-between items-center">
           <Logo />
-          {user ? (
+          {loading ? (
+            // Ачааллаж байх үед юм ч харуулахгүй (эсвэл skeleton)
+            <div className="w-32 h-9 bg-gray-200 rounded-full animate-pulse" />
+          ) : user ? (
             <div>
               <div className="flex gap-3.25">
                 <div className="px-3 py-2 flex gap-1 justify-center items-center bg-white rounded-3xl cursor pointer">
