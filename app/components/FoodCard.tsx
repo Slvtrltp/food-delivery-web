@@ -6,6 +6,8 @@ interface FoodCardProps {
   title: string;
   description: string;
   price: string;
+  width: string;
+  height: string;
 }
 
 export const FoodCard: React.FC<FoodCardProps> = ({
@@ -13,9 +15,14 @@ export const FoodCard: React.FC<FoodCardProps> = ({
   title,
   description,
   price,
+  width,
+  height,
 }) => {
   return (
-    <div className=" my-10 group relative w-[320px] h-[400px] bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer flex flex-col transition-all duration-300 hover:shadow-2xl">
+    <div
+      className={`my-10 group relative bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer flex flex-col transition-all duration-300 hover:shadow-2xl`}
+      style={{ width: width, height: height }}
+    >
       <div className="relative w-full h-[240px] overflow-hidden bg-gray-100">
         <Image
           src={image}

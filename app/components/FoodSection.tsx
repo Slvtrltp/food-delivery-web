@@ -13,6 +13,8 @@ export const FoodSection = ({ label }: Props) => {
       <div className="grid grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <FoodCard
+            width="320px"
+            height="440px"
             key={index}
             image={"/fruit.jpg"}
             title="Blueberry"

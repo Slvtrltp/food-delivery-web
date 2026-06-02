@@ -31,7 +31,7 @@ export function DialogDemo({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button
-          className="py-4 px-3 text-center rounded-4xl bg-[#EF4444] text-white cursor-pointer"
+          className="py-4 px-3 text-center rounded-4xl bg-[#448A5B] text-white cursor-pointer"
           variant="outline"
         >
           +
@@ -49,7 +49,7 @@ export function DialogDemo({
               id="name"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
-              placeholder="Жишээ: Бууз"
+              placeholder="Жишээ: Саагий"
             />
           </div>
         </div>

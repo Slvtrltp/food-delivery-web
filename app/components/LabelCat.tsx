@@ -11,7 +11,7 @@ import { useState } from "react";
 type Props = {
   label: string;
   opacity: string;
-  num: number;
+  count: number;
   categories?: CategoryWithCount[];
   onDelete?: (id: string) => void;
   onEdit?: (id: string, name: string) => void;
@@ -23,7 +23,7 @@ type CategoryWithCount = Prisma.FoodCategoryGetPayload<{
 export const Label = ({
   label,
   opacity,
-  num,
+  count,
   categories = [],
   onDelete,
   onEdit,
@@ -37,7 +37,7 @@ export const Label = ({
       <div className="flex items-center gap-2">
         <span className="text-[20px] font-semibold">{label}</span>
         <div className="text-[20px] font-semibold" style={{ opacity: opacity }}>
-          ({num})
+          ({count})
         </div>
       </div>
       <Dialog open={manageOpen} onOpenChange={setManageOpen}>

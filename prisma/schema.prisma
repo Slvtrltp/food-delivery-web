@@ -14,8 +14,8 @@ datasource db {
 
 model Food {
   id             String          @id
-  foodNAme       String
-  price          Int
+  foodName       String
+  price          Int             @default(0)
   image          String
   ingredients    String
   category       FoodCategory    @relation(fields: [foodCategoryId], references: [id])

@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CategoryButton } from "./CategoryButton";
 import { Prisma } from "../generated/prisma/client";
 import axios, { all } from "axios";
 import { DialogDemo } from "./Add";
 import { Label } from "./LabelCat";
+import { AdminFood } from "./AdminFood";
 
 type Props = {
   onCreate: () => void;
@@ -23,32 +24,64 @@ type CategoryWithCount = Prisma.FoodCategoryGetPayload<{
 export const Category = ({ onClick, onCreate }: Props) => {
   const [isActive, setIsActive] = useState("all");
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
-  const [name, setName] = useState(""); // ← энд хадгална
+  const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
-  const fetchCategories = () => {
-    axios.get("/api/foods/categories").then((res) => setCategories(res.data));
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCategories();
+    axios
+      .get("/api/foods/categories")
+      .then((res) => {
+        setCategories(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
-
   const handleSave = async () => {
     if (!name) return;
-    await axios.post("/api/foods/categories", { categoryName: name });
-    setName("");
-    setOpen(false);
-    fetchCategories();
+    setLoading(true);
+    try {
+      await axios.post("/api/foods/categories", { categoryName: name });
+      setName("");
+      setOpen(false);
+
+      const res = await axios.get("/api/foods/categories");
+      setCategories(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
   const handleDelete = async (id: string) => {
-    await axios.delete(`/api/foods/categories/${id}`);
-    fetchCategories();
+    setLoading(true);
+    try {
+      await axios.delete(`/api/foods/categories/${id}`);
+
+      const res = await axios.get("/api/foods/categories");
+      setCategories(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
+  const handleEdit = async (id: string, newName: string) => {
+    setLoading(true);
+    try {
+      await axios.put(`/api/foods/categories/${id}`, { categoryName: newName });
+      const res = await axios.get("/api/foods/categories");
+      setCategories(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
-  const handleEdit = async (id: string, newName: string) => {
-    await axios.put(`/api/foods/categories/${id}`, { categoryName: newName });
-    fetchCategories();
-  };
   const allCount = categories.reduce((prev, next) => {
     return prev + next._count.foods;
   }, 0);
@@ -56,7 +89,7 @@ export const Category = ({ onClick, onCreate }: Props) => {
     <div className="py-6 px-6 space-y-4 ">
       <Label
         opacity="0"
-        num={0}
+        count={0}
         label="Dishes Category"
         categories={categories}
         onDelete={handleDelete}
@@ -92,6 +125,7 @@ export const Category = ({ onClick, onCreate }: Props) => {
           onSave={handleSave}
         />
       </div>
+      <AdminFood />
     </div>
   );
 };

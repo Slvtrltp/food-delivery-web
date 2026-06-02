@@ -7,7 +7,17 @@ export const GET = async () => {
   return NextResponse.json(foods);
 };
 export const POST = async (req: NextRequest) => {
-  const foods: Prisma.FoodCreateInput = await req.json();
-  const newFood = await prisma.food.create({ data: foods });
-  return NextResponse.json(newFood);
+  const { foodCategoryId, ...restBody }: Prisma.FoodUncheckedCreateInput =
+    await req.json();
+  const result = await prisma.food.create({
+    data: {
+      ...restBody,
+      category: {
+        connect: {
+          id: foodCategoryId,
+        },
+      },
+    },
+  });
+  return NextResponse.json(result);
 };
