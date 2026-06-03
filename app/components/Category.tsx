@@ -4,8 +4,7 @@ import { CategoryButton } from "./CategoryButton";
 import { Prisma } from "../generated/prisma/client";
 import axios, { all } from "axios";
 import { DialogDemo } from "./Add";
-import { Label } from "./LabelCat";
-import { AdminFood } from "./AdminFood";
+import { LabelCat } from "./LabelCat";
 
 type Props = {
   onCreate: () => void;
@@ -86,10 +85,10 @@ export const Category = ({ onClick, onCreate }: Props) => {
     return prev + next._count.foods;
   }, 0);
   return (
-    <div className="py-6 px-6 space-y-4 ">
-      <Label
+    <div className="py-6 px-6 space-y-4  w-full h-full rounded-lg bg-white ">
+      <LabelCat
         opacity="0"
-        count={0}
+        num={0}
         label="Dishes Category"
         categories={categories}
         onDelete={handleDelete}
@@ -125,7 +124,6 @@ export const Category = ({ onClick, onCreate }: Props) => {
           onSave={handleSave}
         />
       </div>
-      <AdminFood />
     </div>
   );
 };

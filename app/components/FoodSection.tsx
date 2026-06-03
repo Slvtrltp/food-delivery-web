@@ -1,26 +1,28 @@
 import React from "react";
 import { FoodCard } from "./FoodCard";
-type Props = {
-  label: string;
-};
+import { AddFoodCard } from "./AddFoodCard";
+import { FoodCategoryWithFood } from "../(admin)/admin/products/page";
+import { LabelCat } from "./LabelCat";
+import { Label } from "./Label";
 
-export const FoodSection = ({ label }: Props) => {
-  // const [isOpen, setIsOpen] = useState("");
-
+export const FoodSection = ({
+  category,
+  onCreate,
+}: {
+  category: FoodCategoryWithFood;
+  onCreate: (catId: string) => void;
+}) => {
   return (
-    <div className="space-y-3 container pt-10">
-      <div className="text-[30px] font-semibold text-center">{label}</div>
+    <div className="space-y-3  w-full h-full rounded-lg bg-white py-6 px-6">
+      <Label category={category} />
       <div className="grid grid-cols-4">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <FoodCard
-            width="320px"
-            height="440px"
-            key={index}
-            image={"/fruit.jpg"}
-            title="Blueberry"
-            description="Blueberries are small, sweet, and slightly tart perennial berries native to North America."
-            price="$10"
-          />
+        <AddFoodCard
+          onClick={() => {
+            onCreate(category.id);
+          }}
+        />
+        {category.foods.map((food, index) => (
+          <FoodCard key={`${category.id}-${index}`} food={food} />
         ))}
       </div>
     </div>
