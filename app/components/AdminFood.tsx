@@ -27,11 +27,12 @@ type CategoryWithCount = Prisma.FoodCategoryGetPayload<{
 
 export const AdminFood = () => {
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-
-  const [foods, setFoods] = useState<Food[]>({
-  });
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [ingredients, setIngredients] = useState("");
+  const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState({
     foodName: "",
