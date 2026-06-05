@@ -11,7 +11,7 @@ import { FoodCategoryWithFood } from "../(admin)/admin/products/page";
 
 export const Label = ({ category }: { category: FoodCategoryWithFood }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 pl-4">
       <span className="text-[20px] font-semibold">{category.categoryName}</span>
       <div className="text-[20px] font-semibold">({category.foods.length})</div>
     </div>

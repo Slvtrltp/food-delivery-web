@@ -8,19 +8,23 @@ import { Label } from "./Label";
 export const FoodSection = ({
   category,
   onCreate,
+  isAdmin = false,
 }: {
   category: FoodCategoryWithFood;
   onCreate: (catId: string) => void;
+  isAdmin: boolean;
 }) => {
   return (
     <div className="space-y-3  w-full h-full rounded-lg bg-white py-6 px-6">
       <Label category={category} />
-      <div className="grid grid-cols-4">
-        <AddFoodCard
-          onClick={() => {
-            onCreate(category.id);
-          }}
-        />
+      <div className="grid grid-cols-5 items-center ">
+        {isAdmin && (
+          <AddFoodCard
+            onClick={() => {
+              onCreate(category.id);
+            }}
+          />
+        )}
         {category.foods.map((food, index) => (
           <FoodCard key={`${category.id}-${index}`} food={food} />
         ))}

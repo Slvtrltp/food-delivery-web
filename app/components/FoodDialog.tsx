@@ -42,13 +42,20 @@ export const FoodDialog = ({
   const [loading, setLoading] = useState(false);
 
   const handleOnSubmit = () => {
+    console.log({ foodName: name, price, ingredients, image, foodCategoryId });
+
+    if (!name || !image || !foodCategoryId || !price || !ingredients) {
+      alert("Бүх талбарыг бөглөнө үү");
+      return;
+    }
+
     setLoading(true);
     axios
-      .post("api/foods", {
-        name,
+      .post("/api/foods", {
+        foodName: name,
         price,
         ingredients,
-        image,
+        image: image || "https://via.placeholder.com/300",
         foodCategoryId,
       })
       .then((res) => {
@@ -58,7 +65,8 @@ export const FoodDialog = ({
         window.location.reload();
       })
       .catch(({ response }) => {
-        alert("Aldaa");
+        console.log(response);
+        alert("Алдаа: " + response?.data?.message);
       });
   };
   return (
@@ -144,7 +152,6 @@ export const FoodDialog = ({
                   <img src={image} alt={name} className="max-w-full h-auto" />
                 )}
               </Field>
-
               <DialogFooter>
                 <DialogClose asChild>
                   <Button variant="outline" disabled={loading}>

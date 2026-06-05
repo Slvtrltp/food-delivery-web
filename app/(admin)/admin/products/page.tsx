@@ -28,11 +28,8 @@ export default function AdminProductsPage() {
   }, [creatingCategory]);
 
   const handleOnCreateProduct = (categoryId: string) => {
+    console.log("categoryId:", categoryId);
     setCreatingCategory(categoryId);
-  };
-
-  const handleOnCreateCategory = () => {
-    setIsCategoryCreating(!isCategoryCreating);
   };
 
   return (
@@ -47,6 +44,7 @@ export default function AdminProductsPage() {
             key={section.id}
             onCreate={handleOnCreateProduct}
             category={section}
+            isAdmin={true}
           />
         ))}
       </div>
