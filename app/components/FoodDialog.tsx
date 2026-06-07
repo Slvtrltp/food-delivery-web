@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,60 +23,91 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Food } from "../generated/prisma/client";
 
 export const FoodDialog = ({
   open,
   onClose,
   categories,
   foodCategoryId,
+  food,
 }: {
   open: boolean;
   onClose: () => void;
   categories: FoodCategoryWithFood[];
   foodCategoryId: string;
+  food?: Food | null;
 }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [ingredients, setIngredients] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(foodCategoryId);
 
-  const handleOnSubmit = () => {
-    console.log({ foodName: name, price, ingredients, image, foodCategoryId });
-
-    if (!name || !image || !foodCategoryId || !price || !ingredients) {
-      alert("Бүх талбарыг бөглөнө үү");
-      return;
+  useEffect(() => {
+    if (food) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setName(food.foodName);
+      setPrice(food.price);
+      setIngredients(food.ingredients);
+      setImage(food.image);
+      setSelectedCategoryId(food.foodCategoryId); // ← нэмэх
+    } else {
+      setName("");
+      setPrice(0);
+      setIngredients("");
+      setImage("");
+      setSelectedCategoryId(foodCategoryId); // ← нэмэх
     }
+  }, [food, foodCategoryId]);
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      onClose();
+
+      setName("");
+      setPrice(0);
+      setIngredients("");
+      setImage("");
+    }
+  };
+  const handleOnSubmit = async () => {
     setLoading(true);
-    axios
-      .post("/api/foods", {
-        foodName: name,
-        price,
-        ingredients,
-        image: image || "https://via.placeholder.com/300",
-        foodCategoryId,
-      })
-      .then((res) => {
-        alert("Food added");
-        setLoading(false);
-        onClose();
-        window.location.reload();
-      })
-      .catch(({ response }) => {
-        console.log(response);
-        alert("Алдаа: " + response?.data?.message);
-      });
+
+    try {
+      if (food) {
+        await axios.put(`/api/foods/${food.id}`, {
+          foodName: name,
+          price,
+          ingredients,
+          image,
+          foodCategoryId: selectedCategoryId,
+        });
+      } else {
+        await axios.post("/api/foods", {
+          foodName: name,
+          price,
+          ingredients,
+          image,
+          foodCategoryId: selectedCategoryId,
+        });
+      }
+
+      onClose();
+      window.location.reload();
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-10">
-        <Dialog open={open} onOpenChange={onClose}>
-          <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg">
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+          <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold border-b pb-2">
-                Dishes info
+                {food ? "Edit Dish" : "Add Dish"}
               </DialogTitle>
             </DialogHeader>
 
@@ -95,7 +126,10 @@ export const FoodDialog = ({
               </div>
               <Field>
                 <Label htmlFor="category-1">Category</Label>
-                <Select defaultValue={foodCategoryId} value={foodCategoryId}>
+                <Select
+                  value={selectedCategoryId} // ← state
+                  onValueChange={(val) => setSelectedCategoryId(val)}
+                >
                   <SelectTrigger id="category-1" className="w-full max-w-48">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
@@ -124,12 +158,10 @@ export const FoodDialog = ({
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-700">Price</p>
                 <Input
-                  type="price"
+                  type="number"
                   value={price}
                   onChange={(e) => {
-                    if (Number(e.target.value)) {
-                      setPrice(Number(e.target.value));
-                    }
+                    setPrice(Number(e.target.value) || 0);
                   }}
                   placeholder="$0.00"
                 />
@@ -153,11 +185,26 @@ export const FoodDialog = ({
                 )}
               </Field>
               <DialogFooter>
+                {food && (
+                  <Button
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => {
+                      if (!confirm("Delete this food?")) return;
+                      axios.delete(`/api/foods/${food.id}`).then(() => {
+                        onClose();
+                        window.location.reload();
+                      });
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
                 <DialogClose asChild>
                   <Button variant="outline" disabled={loading}>
                     Cancel
                   </Button>
                 </DialogClose>
+
                 <Button
                   type="submit"
                   disabled={loading}

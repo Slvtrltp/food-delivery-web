@@ -4,7 +4,7 @@ import { AddFoodCard } from "@/app/components/AddFoodCard";
 import { Category } from "@/app/components/Category";
 import { FoodDialog } from "@/app/components/FoodDialog";
 import { FoodSection } from "@/app/components/FoodSection";
-import { Prisma } from "@/app/generated/prisma/client";
+import { Food, Prisma } from "@/app/generated/prisma/client";
 import axios from "axios";
 import { useEffect, useState } from "react";
 export type FoodCategoryWithFood = Prisma.FoodCategoryGetPayload<{
@@ -12,9 +12,10 @@ export type FoodCategoryWithFood = Prisma.FoodCategoryGetPayload<{
 }>;
 export default function AdminProductsPage() {
   const [active, setActive] = useState("all");
-  const [isCategoryCreating, setIsCategoryCreating] = useState(false);
   const [categories, setCategories] = useState<FoodCategoryWithFood[]>([]);
+  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [creatingCategory, setCreatingCategory] = useState("");
+  const [open, setOpen] = useState(false);
   const visible =
     active === "all" ? categories : categories.filter((s) => s.id === active);
 
@@ -28,10 +29,16 @@ export default function AdminProductsPage() {
   }, [creatingCategory]);
 
   const handleOnCreateProduct = (categoryId: string) => {
-    console.log("categoryId:", categoryId);
     setCreatingCategory(categoryId);
+    setSelectedFood(null);
+    setOpen(true);
   };
 
+  const handleEdit = (food: Food) => {
+    setSelectedFood(food);
+    setCreatingCategory(food.foodCategoryId);
+    setOpen(true);
+  };
   return (
     <div>
       <Category
@@ -45,15 +52,19 @@ export default function AdminProductsPage() {
             onCreate={handleOnCreateProduct}
             category={section}
             isAdmin={true}
+            onEdit={handleEdit}
           />
         ))}
       </div>
       <FoodDialog
+        open={open}
         categories={categories}
         foodCategoryId={creatingCategory}
-        open={Boolean(creatingCategory)}
+        food={selectedFood}
         onClose={() => {
+          setOpen(false);
           setCreatingCategory("");
+          setSelectedFood(null);
         }}
       />
     </div>

@@ -1,4 +1,11 @@
 "use client";
+
+import OrdersTable from "./OrdersTable";
+
 export default function AdminOrdersPage() {
-  return;
+  return (
+    <div>
+      <OrdersTable />
+    </div>
+  );
 }
