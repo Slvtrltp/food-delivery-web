@@ -42,6 +42,7 @@ model FoodOrder {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   foodOrderItems FoodOrderItem[]
+    address  String? 
 }
 
 model User {

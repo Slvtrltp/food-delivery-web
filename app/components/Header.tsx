@@ -4,16 +4,21 @@ import React, { useContext, useEffect, useState } from "react";
 import { useUser } from "../user-provider";
 import { Logo } from "./auth-form";
 import { useRouter } from "next/navigation";
+import { useCart } from "../(client)/CartContext";
+import { CartDrawer } from "../(client)/CartDrawer";
 
 export const Header = () => {
   const { user, logout, loading } = useUser();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-
+  const { items } = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
   const handleSignOut = () => {
     logout();
     router.push("/");
   };
+
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
     <div className="bg-white w-full flex justify-center items-center">
@@ -21,7 +26,6 @@ export const Header = () => {
         <div className="w-full flex justify-between items-center">
           <Logo />
           {loading ? (
-            // Ачааллаж байх үед юм ч харуулахгүй (эсвэл skeleton)
             <div className="w-32 h-9 bg-gray-200 rounded-full animate-pulse" />
           ) : user ? (
             <div>
@@ -74,7 +78,10 @@ export const Header = () => {
                     </svg>
                   </div>
                 </div>
-                <div className="py-2 px-2.5 bg-white rounded-4xl flex justify-center items-center">
+                <div
+                  onClick={() => setCartOpen(true)}
+                  className="py-2 px-2.5 bg-white rounded-4xl flex justify-center items-center relative"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -89,6 +96,11 @@ export const Header = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#448A5B] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
                 </div>
                 <div
                   onClick={() => setIsOpen(!isOpen)}
@@ -134,6 +146,7 @@ export const Header = () => {
           )}
         </div>
       </div>
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 };
