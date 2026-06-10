@@ -20,6 +20,8 @@ import {
 import { FoodOrderStatus, Prisma } from "@/app/generated/prisma/client";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import { OrderRow } from "./OrderRow";
+import { Checkbox } from "@/components/ui/checkbox";
+import { on } from "events";
 
 type OrderWithDetails = Prisma.FoodOrderGetPayload<{
   include: {
@@ -30,11 +32,24 @@ type OrderWithDetails = Prisma.FoodOrderGetPayload<{
 
 export default function OrdersTable() {
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
-
+  const [selected, setSelected] = useState<string[]>([]);
   useEffect(() => {
     axios.get("/api/orders").then((res) => setOrders(res.data));
   }, []);
 
+  const all = () => {
+    if (selected.length === orders.length) {
+      setSelected([]);
+    } else {
+      setSelected(orders.map((order) => order.id));
+    }
+  };
+
+  const one = (id: string) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
   const handleStatusChange = async (orderId: string, status: string) => {
     await axios.put(`/api/orders/${orderId}`, { status });
     setOrders((prev) =>
@@ -52,6 +67,12 @@ export default function OrdersTable() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>
+              <Checkbox
+                checked={selected.length === orders.length && orders.length > 0}
+                onCheckedChange={all}
+              />
+            </TableHead>
             <TableHead>№</TableHead>
             <TableHead>Customer</TableHead>
             <TableHead>Food</TableHead>
@@ -67,6 +88,8 @@ export default function OrdersTable() {
               order={order}
               index={index}
               onStatusChange={handleStatusChange}
+              checked={selected.includes(order.id)}
+              onCheckedChange={() => one(order.id)}
             />
           ))}
         </TableBody>

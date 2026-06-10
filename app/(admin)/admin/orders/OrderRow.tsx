@@ -9,8 +9,7 @@ import {
 import { Prisma } from "@/app/generated/prisma/client";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import { OrderFoodCell } from "./OrderFood";
-import { Checkbox } from "radix-ui";
-
+import { Checkbox } from "@/components/ui/checkbox";
 type OrderWithDetails = Prisma.FoodOrderGetPayload<{
   include: {
     user: true;
@@ -22,13 +21,21 @@ export const OrderRow = ({
   order,
   index,
   onStatusChange,
+  checked,
+  onCheckedChange,
 }: {
   order: OrderWithDetails;
   index: number;
   onStatusChange: (id: string, status: string) => void;
+  checked: boolean;
+  onCheckedChange: () => void;
 }) => {
   return (
     <TableRow key={order.id}>
+      <TableCell>
+        {" "}
+        <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
+      </TableCell>
       <TableCell>{index + 1}</TableCell>
       <TableCell>{order.user.email}</TableCell>
       <TableCell>
