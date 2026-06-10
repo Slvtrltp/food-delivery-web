@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "./CartContext";
 import { useUser } from "../user-provider";
 
@@ -24,11 +24,12 @@ export const CartDrawer = ({
   const { user } = useUser();
   const router = useRouter();
   const [tab, setTab] = useState<"cart" | "order">("cart");
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(user?.address || "");
   const [addressError, setAddressError] = useState(false);
   const [loginAlert, setLoginAlert] = useState(false);
   const [success, setSuccess] = useState(false);
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const itemsTotal = items.reduce(
     (sum, i) => sum + i.food.price * i.quantity,
@@ -50,7 +51,9 @@ export const CartDrawer = ({
     }
     setTab(t);
   };
+
   const handleCheckout = async () => {
+    if (loading) return;
     if (!user) {
       setLoginAlert(true);
       return;
@@ -59,15 +62,21 @@ export const CartDrawer = ({
       setAddressError(true);
       return;
     }
-    await axios.post("/api/orders", {
-      userId: user.id,
-      totalPrice: total,
-      address,
-      items: items.map((i) => ({ foodId: i.food.id, quantity: i.quantity })),
-    });
-    clearCart();
-    setAddress("");
-    setSuccess(true);
+
+    setLoading(true);
+    try {
+      await axios.post("/api/orders", {
+        userId: user.id,
+        totalPrice: total,
+        address,
+        items: items.map((i) => ({ foodId: i.food.id, quantity: i.quantity })),
+      });
+      clearCart();
+      setAddress("");
+      setSuccess(true);
+    } finally {
+      setLoading(false);
+    }
   };
   if (!open) return null;
   return (
@@ -137,13 +146,40 @@ export const CartDrawer = ({
               Your order has been successfully placed!
             </p>
             <button
+              disabled={loading}
               onClick={() => {
                 setSuccess(false);
                 onClose();
               }}
               className="mt-4 px-6 py-2 bg-black text-white rounded-lg"
             >
-              Back to home
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 22 6.477 22 12h-4z"
+                    />
+                  </svg>
+                  Захиалж байна...
+                </>
+              ) : (
+                "Back to home"
+              )}
             </button>
           </div>
         </div>
@@ -154,6 +190,7 @@ export const CartDrawer = ({
             <p className="font-semibold mb-4">You need to log in first</p>
 
             <button
+              disabled={loading}
               onClick={() => {
                 setLoginAlert(false);
                 router.push("/login");
@@ -213,7 +250,10 @@ export const CartDrawer = ({
                               {item.food.ingredients}
                             </p>
                           </div>
-                          <div onClick={() => removeItem(item.food.id)}>
+                          <button
+                            disabled={loading}
+                            onClick={() => removeItem(item.food.id)}
+                          >
                             <svg
                               width="36"
                               height="36"
@@ -232,7 +272,7 @@ export const CartDrawer = ({
                                 strokeLinejoin="round"
                               />
                             </svg>
-                          </div>
+                          </button>
                         </div>
                         <div className="flex justify-between">
                           <div className="flex items-center gap-2">
@@ -248,10 +288,37 @@ export const CartDrawer = ({
                             </button>
                             <span className="text-sm">{item.quantity}</span>
                             <button
+                              disabled={loading}
                               onClick={() => addItem(item.food, 1)}
                               className="w-5 h-5 border rounded flex items-center justify-center"
                             >
-                              +
+                              {loading ? (
+                                <>
+                                  <svg
+                                    className="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                    />
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 22 6.477 22 12h-4z"
+                                    />
+                                  </svg>
+                                  Захиалж байна...
+                                </>
+                              ) : (
+                                "+"
+                              )}
                             </button>
                           </div>
                           <div className="text-[16px] font-bold">
@@ -267,7 +334,7 @@ export const CartDrawer = ({
                     Delivery location
                   </h1>
                   <textarea
-                    value={address}
+                    value={address || user?.address || ""}
                     onChange={(e) => {
                       setAddress(e.target.value);
                       setAddressError(false);
@@ -303,10 +370,35 @@ export const CartDrawer = ({
 
                   <button
                     onClick={handleCheckout}
-                    disabled={items.length === 0}
-                    className="w-full py-3 bg-[#448A5B] text-white rounded-xl font-medium disabled:opacity-50"
+                    disabled={items.length === 0 || loading}
+                    className="w-full py-3 bg-[#448A5B] text-white rounded-xl font-medium disabled:opacity-50 flex justify-center items-center"
                   >
-                    Checkout
+                    {loading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 22 6.477 22 12h-4z"
+                          />
+                        </svg>
+                      </>
+                    ) : (
+                      "Checkout"
+                    )}
                   </button>
                 </div>
               </div>
@@ -314,37 +406,59 @@ export const CartDrawer = ({
           </div>
         </div>
       ) : (
-        <div className="space-y-5">
-          <h1 className="text-[20px] font-semibold text-[#71717A]">
-            Order history
-          </h1>
+        <div className="space-y-4">
+          <h1 className="text-[20px] font-semibold">Order history</h1>
           {orders.length === 0 ? (
             <p className="text-center text-gray-400 py-8">No orders yet</p>
           ) : (
-            <div>
+            <div className="space-y-4">
               {orders.map((order) => (
                 <div key={order.id}>
-                  <div>
-                    <div className="flex gap-[8px]">
-                      <p>{order.totalPrice}</p>
-                      <p>{order.userId}</p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <p className="font-bold text-[16px]">
+                        ${order.totalPrice}{" "}
+                        <span className="text-gray-400 font-normal text-[13px]">
+                          (#{order.id.slice(-5)})
+                        </span>
+                      </p>
+                      <div
+                        className={`px-3 py-1 rounded-full border text-[12px] font-medium ${
+                          order.status === "PENDING"
+                            ? "text-red-500 border-red-400"
+                            : order.status === "DELIVERED"
+                              ? "text-gray-500 border-gray-300"
+                              : "text-red-500 border-red-400"
+                        }`}
+                      >
+                        {order.status}
+                      </div>
                     </div>
-                    <div
-                      className={`px-[10px] py-1 rounded-lg border text-[12px] ${order.status === "PENDING" ? "text-yellow-500 border-yellow-400 " : order.status === "DELIVERED" ? "border-[#448A5B]" : "text-red-500 border-red-400"}`}
-                    >
-                      {order.status}
+                    {order.foodOrderItems?.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between items-center"
+                      >
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <span>{item.food?.foodName}</span>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          x{item.quantity}
+                        </p>
+                      </div>
+                    ))}
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <span>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
+                    {order.address && (
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <span className="truncate">{order.address}</span>
+                      </div>
+                    )}
                   </div>
-                  {order.foodOrderItems?.map((item) => (
-                    <div key={item.id} className="flex justify-between">
-                      <p className="text-sm text-gray-500"></p>
-                      <p className="text-sm text-gray-500">x{item.quantity}</p>
-                    </div>
-                  ))}
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
-                  <p>{order.address}</p>
+                  <div className="border-dashed border-b border-gray-200 my-2" />
                 </div>
               ))}
             </div>

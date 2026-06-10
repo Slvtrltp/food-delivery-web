@@ -6,13 +6,26 @@ import { Logo } from "./auth-form";
 import { useRouter } from "next/navigation";
 import { useCart } from "../(client)/CartContext";
 import { CartDrawer } from "../(client)/CartDrawer";
+import axios from "axios";
 
 export const Header = () => {
-  const { user, logout, loading } = useUser();
+  const { user, logout, loading, accessToken, setUser } = useUser();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { items } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
+  const [addressOpen, setAddressOpen] = useState(false);
+  const [addressInput, setAddressInput] = useState("");
+
+  const handleSaveAddress = async () => {
+    const res = await axios.put(
+      "/api/auth/me",
+      { address: addressInput },
+      { headers: { Authorization: "Bearer " + accessToken } },
+    );
+    setUser(res.data);
+    setAddressOpen(false);
+  };
   const handleSignOut = () => {
     logout();
     router.push("/");
@@ -29,7 +42,7 @@ export const Header = () => {
             <div className="w-32 h-9 bg-gray-200 rounded-full animate-pulse" />
           ) : user ? (
             <div>
-              <div className="flex gap-3.25">
+              <div className="flex gap-3.25 items-center">
                 <div className="px-3 py-2 flex gap-1 justify-center items-center bg-white rounded-3xl cursor pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -53,13 +66,65 @@ export const Header = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <p className="text-[12px] text-[#448A5B]">
-                    Delivery address:{" "}
-                    <span className="text-[12px] text-[#71717A] cursor pointer">
-                      {"Add location"}
-                    </span>
-                  </p>
-                  <div>
+                  <div className="px-3 py-2 flex gap-1 justify-center items-center bg-white rounded-3xl cursor-pointer relative">
+                    <div className="text-[12px] text-[#448A5B]">
+                      Delivery address:{" "}
+                      <div
+                        onClick={() => setAddressOpen(!addressOpen)}
+                        className="text-[12px] text-[#71717A] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#448A5B] hover:after:w-full after:transition-all after:duration-300"
+                      >
+                        {user.address || "Add location"}
+                      </div>
+                    </div>
+
+                    {addressOpen && (
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute top-12 left-0 bg-white shadow-lg rounded-xl p-4 w-72 z-50"
+                      >
+                        <p className="text-sm font-semibold mb-2">
+                          Delivery address
+                        </p>
+                        <input
+                          value={addressInput}
+                          onChange={(e) => setAddressInput(e.target.value)}
+                          placeholder="Хаягаа оруулна уу..."
+                          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
+                        />
+                        <button
+                          onClick={handleSaveAddress}
+                          disabled={!addressInput.trim() || loading}
+                          className="w-full flex justify-center items-center mt-2 bg-[#448A5B] text-white py-2 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#357a4a] active:scale-95 transition-all duration-200"
+                        >
+                          {loading ? (
+                            <svg
+                              className="animate-spin h-5 w-5 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 22 6.477 22 12h-4z"
+                              />
+                            </svg>
+                          ) : (
+                            "Хадгалах"
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div onClick={() => setAddressOpen(!addressOpen)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -79,7 +144,7 @@ export const Header = () => {
                   </div>
                 </div>
                 <div
-                  onClick={() => setCartOpen(true)}
+                  onClick={() => setCartOpen(!cartOpen)}
                   className="py-2 px-2.5 bg-white rounded-4xl flex justify-center items-center relative"
                 >
                   <svg
@@ -104,7 +169,7 @@ export const Header = () => {
                 </div>
                 <div
                   onClick={() => setIsOpen(!isOpen)}
-                  className="py-2 px-2.5 bg-[#448A5B] rounded-4xl flex justify-center items-center "
+                  className=" w-10 h-10 bg-[#448A5B] rounded-4xl flex justify-center items-center "
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +211,11 @@ export const Header = () => {
           )}
         </div>
       </div>
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartDrawer
+        key={user?.address}
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+      />
     </div>
   );
 };

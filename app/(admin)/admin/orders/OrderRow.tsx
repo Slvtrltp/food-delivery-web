@@ -9,6 +9,7 @@ import {
 import { Prisma } from "@/app/generated/prisma/client";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import { OrderFoodCell } from "./OrderFood";
+import { Checkbox } from "radix-ui";
 
 type OrderWithDetails = Prisma.FoodOrderGetPayload<{
   include: {
