@@ -35,7 +35,7 @@ export const FoodCard = ({
 
         <div className="flex justify-between items-center mt-2">
           <span className="text-lg font-extrabold text-gray-900">
-            {food.price}
+            {food.price}₮
           </span>
           <button className="px-3 py-1 bg-[#448A5B] text-white text-xs font-semibold rounded-md transition-colors hover:bg-[#40b367] active:scale-95">
             Add

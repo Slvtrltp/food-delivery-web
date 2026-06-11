@@ -104,7 +104,10 @@ export const FoodDialog = ({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-10">
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent
+            aria-describedby={undefined}
+            className="sm:max-w-md bg-white p-6 rounded-lg max-h-[90vh] overflow-y-auto"
+          >
             <DialogHeader>
               <DialogTitle className="text-xl font-bold border-b pb-2">
                 {food ? "Edit Dish" : "Add Dish"}
@@ -127,7 +130,7 @@ export const FoodDialog = ({
               <Field>
                 <Label htmlFor="category-1">Category</Label>
                 <Select
-                  value={selectedCategoryId} // ← state
+                  value={selectedCategoryId}
                   onValueChange={(val) => setSelectedCategoryId(val)}
                 >
                   <SelectTrigger id="category-1" className="w-full max-w-48">
