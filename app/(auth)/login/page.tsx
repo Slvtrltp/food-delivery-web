@@ -61,7 +61,6 @@ export default function SignupPage() {
         <SubmitButton loading={loading}>{"Let's Go"}</SubmitButton>
       </form>
       <AuthFooter
-        prompt="Already have an account?"
         linkHref="/login"
         linkText="log in"
       />

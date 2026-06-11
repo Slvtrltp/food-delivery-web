@@ -9,6 +9,7 @@ import { LabelCat } from "./LabelCat";
 type Props = {
   onCreate: () => void;
   onClick: (id: string) => void;
+  admin: boolean;
 };
 
 type CategoryWithCount = Prisma.FoodCategoryGetPayload<{
@@ -20,7 +21,7 @@ type CategoryWithCount = Prisma.FoodCategoryGetPayload<{
     };
   };
 }>;
-export const Category = ({ onClick, onCreate }: Props) => {
+export const Category = ({ onClick, onCreate, admin }: Props) => {
   const [isActive, setIsActive] = useState("all");
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
   const [name, setName] = useState("");
@@ -95,15 +96,17 @@ export const Category = ({ onClick, onCreate }: Props) => {
         onEdit={handleEdit}
       />
       <div className="flex flex-wrap gap-2 items-center">
-        <CategoryButton
-          isActive={isActive === "all"}
-          count={allCount}
-          category="All dishes"
-          onClick={() => {
-            setIsActive("all");
-            onClick("all");
-          }}
-        />{" "}
+        {admin && (
+          <CategoryButton
+            isActive={isActive === "all"}
+            count={allCount}
+            category="All dishes"
+            onClick={() => {
+              setIsActive("all");
+              onClick("all");
+            }}
+          />
+        )}
         {categories.map((cat) => (
           <CategoryButton
             key={cat.id}
@@ -116,13 +119,15 @@ export const Category = ({ onClick, onCreate }: Props) => {
             }}
           />
         ))}
-        <DialogDemo
-          name={name}
-          open={open}
-          onOpenChange={setOpen}
-          onNameChange={setName}
-          onSave={handleSave}
-        />
+        {admin && (
+          <DialogDemo
+            name={name}
+            open={open}
+            onOpenChange={setOpen}
+            onNameChange={setName}
+            onSave={handleSave}
+          />
+        )}
       </div>
     </div>
   );

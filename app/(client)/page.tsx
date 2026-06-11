@@ -1,5 +1,5 @@
 "use client";
-import Hero from "../components/Hero";
+
 import { FoodSection } from "../components/FoodSection";
 
 import { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { Food } from "../generated/prisma/client";
 import axios from "axios";
 import { FoodDetailModal } from "./FoodDetailModal";
 import { CartDrawer } from "./CartDrawer";
+import { Hero } from "../components/Hero";
 
 export default function Home() {
   const [categories, setCategories] = useState<FoodCategoryWithFood[]>([]);
@@ -38,8 +39,7 @@ export default function Home() {
         open={!!selectedFood}
         onClose={() => setSelectedFood(null)}
       />
-     
     </>
   );
 }
-4
+4;

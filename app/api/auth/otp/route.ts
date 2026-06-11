@@ -27,7 +27,7 @@ export const POST = async (req: NextRequest) => {
   }
   try {
     const payload = jwt.verify(user.otp!, "SIGNING-OTP") as { otp: string };
-    if (payload.otp !== body.otp) {
+    if (String(payload.otp) !== String(body.otp)) {
       return NextResponse.json({ message: "Invalid OTP" }, { status: 400 });
     }
   } catch {

@@ -42,6 +42,7 @@ export default function AdminProductsPage() {
   return (
     <div>
       <Category
+        admin={true}
         onClick={(id) => setActive(id)}
         onCreate={() => console.log("create")}
       />
