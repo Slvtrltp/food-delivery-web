@@ -38,7 +38,7 @@ export default function SignupPage() {
         alert(response.message || "Алдаа гарлаа");
         setLoading(false);
       });
-  };
+  };4
   return (
     <>
       <AuthHeader

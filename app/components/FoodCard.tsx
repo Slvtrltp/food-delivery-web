@@ -14,15 +14,13 @@ export const FoodCard = ({
       onClick={onClick}
       className="my-6 group w-[260px] h-[360px] relative bg-white rounded-xl shadow-md overflow-hidden cursor-pointer flex flex-col transition-all duration-300 hover:shadow-xl"
     >
-      <div className="relative w-full h-[180px] overflow-hidden bg-gray-100">
-        <Image
+      <div className="relative w-full h-48 overflow-hidden bg-gray-100">
+        <img
           src={food.image}
           alt={food.foodName}
-          fill
-          className="object-cover transition-opacity duration-300 group-hover:opacity-80"
+          className="w-full h-full object-cover object-center transition-opacity duration-300 group-hover:opacity-80"
         />
       </div>
-
       <div className="p-3 flex flex-col flex-grow justify-between">
         <div>
           <h3 className="text-base font-bold text-gray-800 line-clamp-1">

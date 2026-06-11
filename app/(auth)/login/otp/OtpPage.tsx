@@ -7,7 +7,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useUser } from "@/app/user-provider";
 import { useRouter } from "next/navigation";
-import { OTPInput, REGEXP_ONLY_DIGITS } from "input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   InputOTP,
   InputOTPGroup,
